@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ever After Reading Journal</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container">
+      <div class="header-frame">
+        <div class="header-actions">
+          <button class="btn-ghost" onclick="exportData()">📥 Export Data</button>
+          <button class="btn-ghost" onclick="document.getElementById('importFile').click()">📤 Import</button>
+          <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)"/>
+        </div>
+        <div class="logo-mark">✦</div>
+        <h1 class="site-title">Ever After <em>Reading Journal</em></h1>
+        <p class="site-subtitle">Your personal reading life — beautifully tracked, forever remembered.</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Nav -->
+  <nav class="tab-nav">
+    <div class="container">
+      <div class="tabs">
+        <button class="tab active" data-tab="dashboard">Dashboard</button>
+        <button class="tab" data-tab="library">My Library</button>
+        <button class="tab" data-tab="tbr">To Be Read</button>
+        <button class="tab" data-tab="stats">Stats & Insights</button>
+        <button class="tab" data-tab="quotes">Quotes</button>
+        <button class="tab" data-tab="series">Series Tracker</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="container">
+
+      <!-- ── DASHBOARD ── -->
+      <section class="tab-panel active" id="tab-dashboard">
+        <div class="section-header">
+          <h2>Your Reading Life</h2>
+          <p>Everything at a glance — your progress, your shelf, your story.</p>
+        </div>
+
+        <!-- Reading goal input -->
+        <div class="card tint-amber">
+          <h3 class="card-title">Reading Goal</h3>
+          <div class="form-row">
+            <div class="form-group flex-input">
+              <label>Your name</label>
+              <input type="text" id="readerName" placeholder="e.g. Sarah"/>
+            </div>
+            <div class="form-group flex-input">
+              <label>Books goal for <span id="goalYear">2026</span></label>
+              <input type="number" id="readingGoal" placeholder="e.g. 52" min="1"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 progress rings -->
+        <div class="wheels-row">
+          <div class="card wheel-card tint-amber">
+            <h3 class="card-title">Reading Goal</h3>
+            <div class="countdown-wheel">
+              <svg viewBox="0 0 200 200" class="ring-svg">
+                <circle cx="100" cy="100" r="85" class="ring-bg"/>
+                <circle cx="100" cy="100" r="85" class="ring-fill goal-fill" id="goalFill"/>
+              </svg>
+              <div class="wheel-center">
+                <div class="wheel-num" id="goalPct">0%</div>
+                <div class="wheel-lbl" id="goalCount">0 of 0</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card wheel-card tint-teal">
+            <h3 class="card-title">Books Read</h3>
+            <div class="countdown-wheel">
+              <svg viewBox="0 0 200 200" class="ring-svg">
+                <circle cx="100" cy="100" r="85" class="ring-bg"/>
+                <circle cx="100" cy="100" r="85" class="ring-fill read-fill" id="readFill"/>
+              </svg>
+              <div class="wheel-center">
+                <div class="wheel-num" id="booksReadNum">0</div>
+                <div class="wheel-lbl">this year</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card wheel-card tint-brown">
+            <h3 class="card-title">On My TBR</h3>
+            <div class="countdown-wheel">
+              <svg viewBox="0 0 200 200" class="ring-svg">
+                <circle cx="100" cy="100" r="85" class="ring-bg"/>
+                <circle cx="100" cy="100" r="85" class="ring-fill tbr-fill" id="tbrFill"/>
+              </svg>
+              <div class="wheel-center">
+                <div class="wheel-num" id="tbrNum">0</div>
+                <div class="wheel-lbl">waiting to read</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats row -->
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-value" id="statPages">0</div><div class="stat-label">Pages Read</div></div>
+          <div class="stat-card"><div class="stat-value" id="statAvgRating">—</div><div class="stat-label">Avg Rating</div></div>
+          <div class="stat-card"><div class="stat-value" id="statGenres">0</div><div class="stat-label">Genres Explored</div></div>
+          <div class="stat-card"><div class="stat-value" id="statSeries">0</div><div class="stat-label">Series Tracking</div></div>
+        </div>
+
+        <!-- Currently reading -->
+        <div class="card tint-navy">
+          <h3 class="card-title">Currently Reading</h3>
+          <div class="current-books" id="currentlyReadingList">
+            <p class="empty-msg">📖 No books in progress. Add one in My Library!</p>
+          </div>
+        </div>
+
+        <!-- Book shelf -->
+        <div class="card">
+          <h3 class="card-title">My Shelf</h3>
+          <p class="card-sub">Your most recently read books — hover to see the title.</p>
+          <div class="shelf-wrap">
+            <div class="shelf-label">Recently Read</div>
+            <div class="shelf" id="shelfDisplay">
+              <span class="shelf-empty">Your shelf is empty — start logging books!</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── MY LIBRARY ── -->
+      <section class="tab-panel" id="tab-library">
+        <div class="section-header">
+          <h2>My Library</h2>
+          <p>Every book you've read — rated, reviewed, remembered.</p>
+        </div>
+
+        <div class="card tint-amber">
+          <h3 class="card-title">Log a Book</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Title</label><input type="text" id="bookTitle" placeholder="Book title"/></div>
+            <div class="form-group"><label>Author</label><input type="text" id="bookAuthor" placeholder="Author name"/></div>
+            <div class="form-group"><label>Genre</label>
+              <select id="bookGenre">
+                <option value="Fantasy">Fantasy</option>
+                <option value="Fiction">Fiction</option>
+                <option value="Non-Fiction">Non-Fiction</option>
+                <option value="Romance">Romance</option>
+                <option value="Mystery">Mystery</option>
+                <option value="Thriller">Thriller</option>
+                <option value="Historical">Historical Fiction</option>
+                <option value="SciFi">Sci-Fi</option>
+                <option value="Biography">Biography</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Status</label>
+              <select id="bookStatus">
+                <option value="Read">Read ✓</option>
+                <option value="Reading">Currently Reading</option>
+                <option value="DNF">Did Not Finish</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Pages</label><input type="number" id="bookPages" placeholder="e.g. 342" min="1"/></div>
+            <div class="form-group"><label>Date Finished</label><input type="date" id="bookDate"/></div>
+            <div class="form-group"><label>Format</label>
+              <select id="bookFormat">
+                <option value="Physical">📖 Physical</option>
+                <option value="eBook">📱 eBook</option>
+                <option value="Audiobook">🎧 Audiobook</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Rating</label>
+              <div class="star-rating" id="bookStarRating">
+                <span class="star" data-val="1">★</span>
+                <span class="star" data-val="2">★</span>
+                <span class="star" data-val="3">★</span>
+                <span class="star" data-val="4">★</span>
+                <span class="star" data-val="5">★</span>
+              </div>
+            </div>
+            <div class="form-group full-width"><label>Review / Notes</label>
+              <textarea id="bookReview" rows="3" placeholder="Your thoughts, feelings, favourite moments..."></textarea>
+            </div>
+            <div class="form-group full-width"><label>Favourite Quote from this book</label>
+              <input type="text" id="bookQuote" placeholder="A line that stayed with you..."/>
+            </div>
+          </div>
+          <button class="btn-primary mt" onclick="addBook()">+ Add to Library</button>
+        </div>
+
+        <div class="card">
+          <div class="filter-row">
+            <input type="text" id="librarySearch" placeholder="🔍 Search books..." class="search-input" oninput="renderLibrary()"/>
+            <select id="libraryGenreFilter" class="select-input small" onchange="renderLibrary()">
+              <option value="All">All Genres</option>
+              <option value="Fantasy">Fantasy</option>
+              <option value="Fiction">Fiction</option>
+              <option value="Non-Fiction">Non-Fiction</option>
+              <option value="Romance">Romance</option>
+              <option value="Mystery">Mystery</option>
+              <option value="Thriller">Thriller</option>
+              <option value="Historical">Historical</option>
+              <option value="SciFi">Sci-Fi</option>
+              <option value="Biography">Biography</option>
+              <option value="Other">Other</option>
+            </select>
+            <select id="libraryStatusFilter" class="select-input small" onchange="renderLibrary()">
+              <option value="All">All Status</option>
+              <option value="Read">Read</option>
+              <option value="Reading">Reading</option>
+              <option value="DNF">DNF</option>
+            </select>
+            <select id="librarySortFilter" class="select-input small" onchange="renderLibrary()">
+              <option value="recent">Most Recent</option>
+              <option value="rating">Highest Rated</option>
+              <option value="title">A–Z Title</option>
+              <option value="pages">Most Pages</option>
+            </select>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Title & Author</th>
+                <th>Genre</th>
+                <th>Pages</th>
+                <th>Rating</th>
+                <th>Format</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="libraryBody">
+              <tr class="empty-row"><td colspan="8">No books yet. Log your first book above! 📚</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── TO BE READ ── -->
+      <section class="tab-panel" id="tab-tbr">
+        <div class="section-header">
+          <h2>To Be Read</h2>
+          <p>Your reading wishlist — the books waiting for their moment.</p>
+        </div>
+
+        <div class="card tint-amber">
+          <h3 class="card-title">Add to TBR</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Title</label><input type="text" id="tbrTitle" placeholder="Book title"/></div>
+            <div class="form-group"><label>Author</label><input type="text" id="tbrAuthor" placeholder="Author name"/></div>
+            <div class="form-group"><label>Genre</label>
+              <select id="tbrGenre">
+                <option value="Fantasy">Fantasy</option>
+                <option value="Fiction">Fiction</option>
+                <option value="Non-Fiction">Non-Fiction</option>
+                <option value="Romance">Romance</option>
+                <option value="Mystery">Mystery</option>
+                <option value="Thriller">Thriller</option>
+                <option value="Historical">Historical Fiction</option>
+                <option value="SciFi">Sci-Fi</option>
+                <option value="Biography">Biography</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Priority</label>
+              <select id="tbrPriority">
+                <option value="High">🔥 High — Read Soon</option>
+                <option value="Medium">📌 Medium</option>
+                <option value="Low">💤 Low — Someday</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Where I Heard About It</label>
+              <select id="tbrSource">
+                <option value="BookTok">BookTok</option>
+                <option value="Friend">Friend Recommendation</option>
+                <option value="Goodreads">Goodreads</option>
+                <option value="Bookstore">Bookstore Discovery</option>
+                <option value="Book Club">Book Club</option>
+                <option value="Review">Review / Article</option>
+                <option value="Author">Favourite Author</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group full-width"><label>Why I Want to Read It</label>
+              <input type="text" id="tbrWhy" placeholder="What drew you to this book?"/>
+            </div>
+          </div>
+          <button class="btn-primary mt" onclick="addTBR()">+ Add to TBR</button>
+        </div>
+
+        <div class="card">
+          <div class="filter-row">
+            <input type="text" id="tbrSearch" placeholder="🔍 Search TBR..." class="search-input" oninput="renderTBR()"/>
+            <select id="tbrPriorityFilter" class="select-input small" onchange="renderTBR()">
+              <option value="All">All Priorities</option>
+              <option value="High">🔥 High</option>
+              <option value="Medium">📌 Medium</option>
+              <option value="Low">💤 Low</option>
+            </select>
+          </div>
+          <div id="tbrList"><p class="empty-msg">📚 Your TBR is empty. Add some books above!</p></div>
+        </div>
+      </section>
+
+      <!-- ── STATS ── -->
+      <section class="tab-panel" id="tab-stats">
+        <div class="section-header">
+          <h2>Stats & Insights</h2>
+          <p>Your reading life, visualized.</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-value" id="statsTotal">0</div><div class="stat-label">Total Books Read</div></div>
+          <div class="stat-card"><div class="stat-value" id="statsTotalPages">0</div><div class="stat-label">Total Pages</div></div>
+          <div class="stat-card"><div class="stat-value" id="statsAvgRating">—</div><div class="stat-label">Average Rating</div></div>
+          <div class="stat-card"><div class="stat-value" id="statsTopGenre">—</div><div class="stat-label">Top Genre</div></div>
+          <div class="stat-card"><div class="stat-value" id="statsLongest">—</div><div class="stat-label">Longest Book (pages)</div></div>
+          <div class="stat-card"><div class="stat-value" id="statsAvgPages">—</div><div class="stat-label">Avg Pages / Book</div></div>
+        </div>
+
+        <div class="card tint-amber">
+          <h3 class="card-title">Genre Breakdown</h3>
+          <div class="donut-wrap" id="genreDonutWrap"></div>
+        </div>
+
+        <div class="card tint-navy">
+          <h3 class="card-title">Books Read by Month</h3>
+          <div class="bar-chart-wrap" id="monthlyBarChart"></div>
+        </div>
+
+        <div class="card tint-brown">
+          <h3 class="card-title">Format Breakdown</h3>
+          <div class="donut-wrap" id="formatDonutWrap"></div>
+        </div>
+
+        <div class="card tint-teal">
+          <h3 class="card-title">Rating Distribution</h3>
+          <div class="bar-chart-wrap" id="ratingBarChart"></div>
+        </div>
+      </section>
+
+      <!-- ── QUOTES ── -->
+      <section class="tab-panel" id="tab-quotes">
+        <div class="section-header">
+          <h2>Quotes & Highlights</h2>
+          <p>The lines that stopped you mid-page — saved forever.</p>
+        </div>
+
+        <div class="card tint-amber">
+          <h3 class="card-title">Add a Quote</h3>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label>The Quote</label>
+              <textarea id="quoteText" rows="3" placeholder="Type or paste the quote here..."></textarea>
+            </div>
+            <div class="form-group"><label>Book Title</label><input type="text" id="quoteBook" placeholder="Which book?"/></div>
+            <div class="form-group"><label>Author</label><input type="text" id="quoteAuthor" placeholder="Who wrote it?"/></div>
+            <div class="form-group"><label>Page Number</label><input type="number" id="quotePage" placeholder="e.g. 147" min="1"/></div>
+            <div class="form-group full-width"><label>Why it moved you (optional)</label>
+              <input type="text" id="quoteNote" placeholder="What made this line stand out?"/>
+            </div>
+          </div>
+          <button class="btn-primary mt" onclick="addQuote()">+ Save Quote</button>
+        </div>
+
+        <div class="card">
+          <div class="filter-row">
+            <input type="text" id="quoteSearch" placeholder="🔍 Search quotes..." class="search-input" oninput="renderQuotes()"/>
+          </div>
+          <div id="quotesList"><p class="empty-msg">✨ No quotes saved yet. Start collecting the lines that move you.</p></div>
+        </div>
+      </section>
+
+      <!-- ── SERIES TRACKER ── -->
+      <section class="tab-panel" id="tab-series">
+        <div class="section-header">
+          <h2>Series Tracker</h2>
+          <p>Never lose your place in a series — track every book, every arc.</p>
+        </div>
+
+        <div class="card tint-amber">
+          <h3 class="card-title">Add a Series</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Series Name</label><input type="text" id="seriesName" placeholder="e.g. The Stormlight Archive"/></div>
+            <div class="form-group"><label>Author</label><input type="text" id="seriesAuthor" placeholder="Author name"/></div>
+            <div class="form-group"><label>Total Books in Series</label><input type="number" id="seriesTotal" placeholder="e.g. 10" min="2" max="50"/></div>
+            <div class="form-group"><label>Genre</label>
+              <select id="seriesGenre">
+                <option value="Fantasy">Fantasy</option>
+                <option value="Fiction">Fiction</option>
+                <option value="Romance">Romance</option>
+                <option value="Mystery">Mystery</option>
+                <option value="Thriller">Thriller</option>
+                <option value="SciFi">Sci-Fi</option>
+                <option value="Historical">Historical</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group full-width"><label>Notes</label>
+              <input type="text" id="seriesNotes" placeholder="Reading order, spin-offs, anything to remember..."/>
+            </div>
+          </div>
+          <button class="btn-primary mt" onclick="addSeries()">+ Add Series</button>
+        </div>
+
+        <div id="seriesList"><p class="empty-msg">📚 No series added yet. Start tracking a series above!</p></div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Made with love for readers ✦ Ever After Reading Journal ✦ Your data is saved automatically</p>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>

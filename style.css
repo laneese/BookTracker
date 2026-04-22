@@ -192,10 +192,10 @@ body {
   pointer-events: none;
 }
 .card:hover { box-shadow: var(--shadow-md); border-color: var(--border-warm); }
-.card.tint-amber { background: rgba(20,32,58,0.92); border-color: rgba(200,131,42,0.38); }
-.card.tint-navy { background: rgba(20,32,58,0.92); border-color: rgba(42,107,114,0.35); }
+.card.tint-amber { background: rgba(13,21,40,0.95); border-color: rgba(200,131,42,0.30); }
+.card.tint-navy  { background: rgba(13,21,40,0.95); border-color: rgba(42,107,114,0.35); }
 .card.tint-brown { background: rgba(13,21,40,0.95); border-color: rgba(200,131,42,0.30); }
-.card.tint-teal { background: rgba(15,32,35,0.92); border-color: rgba(42,107,114,0.4); }
+.card.tint-teal  { background: rgba(13,21,40,0.95); border-color: rgba(42,107,114,0.40); }
 
 .card-title {
   font-family: 'Playfair Display', serif;
